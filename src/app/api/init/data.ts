@@ -9,6 +9,8 @@ const usersData = [
     category: "Technology",
     netfunding: 1000000,
     mentor: true,
+    image:
+      "https://res.cloudinary.com/dwtcjjxwc/image/upload/v1742500586/user_h2ggtz.png",
   },
   {
     name: "Jane Smith",
@@ -20,8 +22,9 @@ const usersData = [
     category: "Healthcare",
     netfunding: 2000000,
     mentor: false,
+    image:
+      "https://res.cloudinary.com/dwtcjjxwc/image/upload/v1742500586/user_h2ggtz.png",
   },
-  // Add 8 more users with similar structure
   {
     name: "Alice Johnson",
     company: "Company C",
@@ -32,6 +35,8 @@ const usersData = [
     category: "Finance",
     netfunding: 1500000,
     mentor: true,
+    image:
+      "https://res.cloudinary.com/dwtcjjxwc/image/upload/v1742500586/user_h2ggtz.png",
   },
   {
     name: "Bob Brown",
@@ -43,6 +48,8 @@ const usersData = [
     category: "Education",
     netfunding: 500000,
     mentor: false,
+    image:
+      "https://res.cloudinary.com/dwtcjjxwc/image/upload/v1742500586/user_h2ggtz.png",
   },
   {
     name: "Charlie Davis",
@@ -54,6 +61,8 @@ const usersData = [
     category: "Technology",
     netfunding: 3000000,
     mentor: true,
+    image:
+      "https://res.cloudinary.com/dwtcjjxwc/image/upload/v1742500586/user_h2ggtz.png",
   },
   {
     name: "Diana Evans",
@@ -65,6 +74,8 @@ const usersData = [
     category: "Healthcare",
     netfunding: 2500000,
     mentor: false,
+    image:
+      "https://res.cloudinary.com/dwtcjjxwc/image/upload/v1742500586/user_h2ggtz.png",
   },
   {
     name: "Ethan Foster",
@@ -76,6 +87,8 @@ const usersData = [
     category: "Finance",
     netfunding: 1200000,
     mentor: true,
+    image:
+      "https://res.cloudinary.com/dwtcjjxwc/image/upload/v1742500586/user_h2ggtz.png",
   },
   {
     name: "Fiona Green",
@@ -87,6 +100,8 @@ const usersData = [
     category: "Education",
     netfunding: 800000,
     mentor: false,
+    image:
+      "https://res.cloudinary.com/dwtcjjxwc/image/upload/v1742500586/user_h2ggtz.png",
   },
   {
     name: "George Harris",
@@ -98,6 +113,8 @@ const usersData = [
     category: "Technology",
     netfunding: 4000000,
     mentor: true,
+    image:
+      "https://res.cloudinary.com/dwtcjjxwc/image/upload/v1742500586/user_h2ggtz.png",
   },
   {
     name: "Hannah White",
@@ -109,6 +126,8 @@ const usersData = [
     category: "Healthcare",
     netfunding: 3500000,
     mentor: false,
+    image:
+      "https://res.cloudinary.com/dwtcjjxwc/image/upload/v1742500586/user_h2ggtz.png",
   },
 ];
 

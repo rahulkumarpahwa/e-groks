@@ -6,8 +6,11 @@ connect();
 
 export const POST = async (request: NextRequest) => {
   try {
-    const users = usersData;
+    // Delete all existing users
+    await User.deleteMany({});
 
+    // Insert new users
+    const users = usersData;
     const newUsers = await User.insertMany(users);
 
     return NextResponse.json(

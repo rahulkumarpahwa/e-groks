@@ -35,10 +35,14 @@ const userSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Please provide net funding in rupees"],
   },
-mentor: {
+  mentor: {
     type: Boolean,
     required: [true, "Please specify if the user is a mentor"],
-}
+  },
+  image: {
+    type: String,
+    default: "https://res.cloudinary.com/dwtcjjxwc/image/upload/v1742500586/user_h2ggtz.png",
+  }
 });
 
 const User = mongoose.models.users || mongoose.model("users", userSchema);

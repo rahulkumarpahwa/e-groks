@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-export const GET = async (request: NextRequest) => {
+import { NextResponse } from "next/server";
+export const GET = async () => {
     return NextResponse.json(
         {
             message: "backend is up!",

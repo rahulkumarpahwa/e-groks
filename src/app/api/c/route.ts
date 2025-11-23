@@ -5,7 +5,7 @@ import path from "path";
 export const GET = async () => {
   try {
     // Resolve the path to the `ai.py` file
-    const filePath = path.join(process.cwd(), "src", "util", "ai.py");
+    const filePath = path.join(process.cwd(), "src", "util", "programs.c");
 
     // Read the file content
     const fileContent = await fs.readFile(filePath, "utf-8");
@@ -17,9 +17,9 @@ export const GET = async () => {
       },
     });
   } catch (error: unknown) {
-    console.error("Error reading ai.py file:", (error as Error).message || error);
+    console.error("Error reading file:", (error as Error).message || error);
     return NextResponse.json(
-      { message: "Failed to fetch ai.py file", success: false },
+      { message: "Failed to fetch file", success: false },
       { status: 500 }
     );
   }

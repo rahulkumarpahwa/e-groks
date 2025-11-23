@@ -13,7 +13,8 @@ export const GET = async () => {
                 getwinbgim: "GET /api/winbgim",
                 getCommand: "GET /api/readme",
                 getc: "GET /api/c",
-                getcdata : "GET /api/cdata"
+                getcdata : "GET /api/cdata",
+                android : "GET /api/android"
             }
         },
         { status: 200 }

@@ -1,0 +1,324 @@
+// MainActivity.java
+
+package com.example.aman;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.SparseBooleanArray;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+
+public class MainActivity extends AppCompatActivity {
+
+    private RadioGroup foodPreferenceRadioGroup;
+    private EditText nameEditText;
+    private RadioGroup genderRadioGroup;
+    private EditText ageEditText;
+    private ListView buffetListView;
+
+    private int customerCounter;
+    private SharedPreferences sharedPreferences;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        sharedPreferences = getSharedPreferences("customer_data", Context.MODE_PRIVATE);
+        customerCounter = sharedPreferences.getInt("customerCounter", 1);
+
+        foodPreferenceRadioGroup = findViewById(R.id.foodPreferenceRadioGroup);
+        nameEditText = findViewById(R.id.nameEditText);
+        genderRadioGroup = findViewById(R.id.genderRadioGroup);
+        ageEditText = findViewById(R.id.ageEditText);
+        buffetListView = findViewById(R.id.buffetListView);
+        Button registerButton = findViewById(R.id.registerButton);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.buffet_items, android.R.layout.simple_list_item_multiple_choice);
+        buffetListView.setAdapter(adapter);
+
+        registerButton.setOnClickListener(v -> registerCustomer());
+    }
+
+    private void registerCustomer() {
+        if (foodPreferenceRadioGroup.getCheckedRadioButtonId() == -1) {
+            Toast.makeText(this, "Please select a food preference", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String foodPreference = ((RadioButton) findViewById(foodPreferenceRadioGroup.getCheckedRadioButtonId())).getText().toString();
+
+        String name = nameEditText.getText().toString().trim();
+        if (TextUtils.isEmpty(name)) {
+            nameEditText.setError("Name is required");
+            nameEditText.requestFocus();
+            return;
+        }
+
+        if (genderRadioGroup.getCheckedRadioButtonId() == -1) {
+            Toast.makeText(this, "Please select a gender", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String gender = ((RadioButton) findViewById(genderRadioGroup.getCheckedRadioButtonId())).getText().toString();
+
+        String age = ageEditText.getText().toString().trim();
+        if (TextUtils.isEmpty(age)) {
+            ageEditText.setError("Age is required");
+            ageEditText.requestFocus();
+            return;
+        }
+
+        ArrayList<String> selectedFoodItems = new ArrayList<>();
+        SparseBooleanArray checked = buffetListView.getCheckedItemPositions();
+        for (int i = 0; i < buffetListView.getAdapter().getCount(); i++) {
+            if (checked.get(i)) {
+                selectedFoodItems.add((String) buffetListView.getAdapter().getItem(i));
+            }
+        }
+
+        if (selectedFoodItems.isEmpty()) {
+            Toast.makeText(this, "Please select at least one buffet item", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String customerId = generateCustomerId(foodPreference);
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("customerCounter", customerCounter);
+        editor.apply();
+
+        Intent intent = new Intent(MainActivity.this, DisplayCustomerActivity.class);
+        intent.putExtra("foodPreference", foodPreference);
+        intent.putExtra("name", name);
+        intent.putExtra("gender", gender);
+        intent.putExtra("age", age);
+        intent.putStringArrayListExtra("selectedFoodItems", selectedFoodItems);
+        intent.putExtra("customerId", customerId);
+        startActivity(intent);
+    }
+
+    private String generateCustomerId(String foodPreference) {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        String foodPrefCode = foodPreference.equals("Vegetarian") ? "Veg" : "NonVeg";
+
+        String id = foodPrefCode + "/" + year + "/Buffet/" + day + "/" + month + "/" + (year % 100) + "/A" + customerCounter;
+        customerCounter++;
+        return id;
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////
+DisplayCustomerActivity.java
+
+
+package com.example.aman;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+
+public class DisplayCustomerActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_display_customer);
+
+        TextView customerInfoTextView = findViewById(R.id.customerInfoTextView);
+
+        Intent intent = getIntent();
+        String foodPreference = intent.getStringExtra("foodPreference") != null ? intent.getStringExtra("foodPreference") : "N/A";
+        String name = intent.getStringExtra("name") != null ? intent.getStringExtra("name") : "N/A";
+        String gender = intent.getStringExtra("gender") != null ? intent.getStringExtra("gender") : "N/A";
+        String age = intent.getStringExtra("age") != null ? intent.getStringExtra("age") : "N/A";
+        ArrayList<String> selectedFoodItems = intent.getStringArrayListExtra("selectedFoodItems");
+        String customerId = intent.getStringExtra("customerId") != null ? intent.getStringExtra("customerId") : "N/A";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Customer ID: ").append(customerId).append("\n\n");
+        sb.append("Name: ").append(name).append("\n");
+        sb.append("Gender: ").append(gender).append("\n");
+        sb.append("Age: ").append(age).append("\n");
+        sb.append("Food Preference: ").append(foodPreference).append("\n");
+        sb.append("Ordered Food Items:\n");
+        if (selectedFoodItems != null) {
+            for (String item : selectedFoodItems) {
+                sb.append("- ").append(item).append("\n");
+            }
+        }
+
+        customerInfoTextView.setText(sb.toString());
+    }
+}
+
+////////////////////////////////////////////////
+activity_main.xml
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome to Food Court Eating Joint"
+        android:textSize="24sp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"/>
+
+    <RadioGroup
+        android:id="@+id/foodPreferenceRadioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Food Preference:"/>
+
+        <RadioButton
+            android:id="@+id/vegRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vegetarian"/>
+
+        <RadioButton
+            android:id="@+id/nonVegRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Non-Vegetarian"/>
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/nameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your name"
+        android:inputType="textPersonName"
+        android:layout_marginBottom="16dp"/>
+
+    <RadioGroup
+        android:id="@+id/genderRadioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gender:"/>
+
+        <RadioButton
+            android:id="@+id/maleRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Male"/>
+
+        <RadioButton
+            android:id="@+id/femaleRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Female"/>
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/ageEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your age"
+        android:inputType="number"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Food Items from Buffet List:"
+        android:layout_marginBottom="8dp"/>
+
+    <ListView
+        android:id="@+id/buffetListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:choiceMode="multipleChoice"
+        android:entries="@array/buffet_items"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Register"/>
+
+</LinearLayout>
+
+///////////////////////////////////////////////////////////////////
+activity_display_customer.xml
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/customerInfoTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"/>
+
+</LinearLayout>
+
+
+/////////////////////////////////////
+strings.xml
+
+<resources>
+    <string-array name="buffet_items">
+        <item>Salad</item>
+        <item>Soup</item>
+        <item>Rice</item>
+        <item>Roti</item>
+        <item>Dal</item>
+        <item>Paneer</item>
+        <item>Chicken</item>
+        <item>Ice Cream</item>
+    </string-array>
+    <string name="app_name">test</string>
+</resources>
+
+///////////////////////////////////////////////////

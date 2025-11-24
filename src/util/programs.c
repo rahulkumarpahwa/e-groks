@@ -72,60 +72,50 @@ void dda_line_demo() {
 /* ============================================
    BRESENHAM LINE ALGORITHM
    ============================================ */
-void bresenham_line(int x0, int y0, int x1, int y1) {
+/*
+ * Bresenham Line Drawing Algorithm
+ */
+
+#include "graphics.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <conio.h>
+
+void bresenham_line(int x0, int y0, int x1, int y1)
+{
     int dx = abs(x1 - x0);
     int dy = abs(y1 - y0);
-    int sx = (x0 < x1) ? 1 : -1;
-    int sy = (y0 < y1) ? 1 : -1;
-    int err = dx - dy;
+    int d = (2 * dy) - dx;
     int x = x0;
     int y = y0;
-    
-    while (1) {
-        putpixel(x, y, WHITE);
-        
-        if (x == x1 && y == y1) break;
-        
-        int e2 = 2 * err;
-        if (e2 > -dy) {
-            err -= dy;
-            x += sx;
+    while (1)
+    {
+        putpixel(x, y, GREEN);
+        if (x == x1 && y == y1)
+            break;
+        if(d<0){
+            d = d + 2 * dy;
+        } else {
+            d = d + 2* (dy -dx);
+            y++;
         }
-        if (e2 < dx) {
-            err += dx;
-            y += sy;
-        }
+        x++;
     }
 }
 
-void bresenham_line_demo() {
+int main()
+{
     int gdriver = DETECT, gmode;
     initgraph(&gdriver, &gmode, "");
-    
-    if (graphresult() != grOk) {
-        printf("Graphics initialization failed\n");
-        return;
-    }
-    
-    int max_x = getmaxx();
-    int max_y = getmaxy();
     cleardevice();
-    
-    setcolor(YELLOW);
-    outtextxy(max_x / 2 - 120, 20, "Bresenham Line Drawing Algorithm");
-    
-    setcolor(WHITE);
     bresenham_line(50, 50, 300, 300);
-    
-    setcolor(RED);
-    bresenham_line(400, 100, 600, 300);
-    
-    setcolor(YELLOW);
-    outtextxy(20, max_y - 40, "Press any key to exit...");
-    
+    outtextxy(20, getmaxy() - 40, "Press any key to exit...");
     getch();
     closegraph();
+    return 0;
 }
+
 
 /* ============================================
    DIRECT METHOD LINE ALGORITHM
@@ -204,58 +194,73 @@ void incremental_line_demo() {
 /* ============================================
    MIDPOINT CIRCLE ALGORITHM
    ============================================ */
-void midpoint_circle(int xc, int yc, int r) {
+/*
+ * Midpoint Circle Drawing Algorithm
+ */
+
+#include "graphics.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+
+void midpoint_circle(int xc, int yc, int r)
+{
     int x = 0;
     int y = r;
-    int d = 3 - 2 * r;
-    
-    while (x <= y) {
+    int d = 1- r; // Decision parameter
+
+    while (x <= y)
+    {
+        // Draw all 8 symmetric points
         putpixel(xc + x, yc + y, WHITE);
         putpixel(xc - x, yc + y, WHITE);
         putpixel(xc + x, yc - y, WHITE);
         putpixel(xc - x, yc - y, WHITE);
+
         putpixel(xc + y, yc + x, WHITE);
         putpixel(xc - y, yc + x, WHITE);
         putpixel(xc + y, yc - x, WHITE);
         putpixel(xc - y, yc - x, WHITE);
-        
-        if (d < 0) d = d + 4 * x + 6;
-        else {
-            d = d + 4 * (x - y) + 10;
+
+        if (d < 0)
+        {
+            d = d + 2 * x + 1;
+        }
+        else
+        {
+            d = d + 2 * (x - y) + 1;
             y--;
         }
         x++;
     }
 }
 
-void midpoint_circle_demo() {
+int main()
+{
     int gdriver = DETECT, gmode;
-    initgraph(&gdriver, &gmode, "");
-    
-    if (graphresult() != grOk) {
-        printf("Graphics initialization failed\n");
-        return;
-    }
-    
+
+    // Initialize graphics mode
+    initgraph(&gdriver, &gmode, "C:\\MINGW\\lib\\libbgi");
+
     int max_x = getmaxx();
     int max_y = getmaxy();
+
+    // Clear screen
     cleardevice();
-    
-    setcolor(YELLOW);
-    outtextxy(max_x / 2 - 100, 20, "Midpoint Circle Drawing Algorithm");
-    
-    setcolor(WHITE);
+
+    // Draw circles with different radii and colors
     midpoint_circle(max_x / 2, max_y / 2, 50);
-    
-    setcolor(RED);
-    midpoint_circle(max_x / 2, max_y / 2, 100);
-    
+
+    // Display info
     setcolor(YELLOW);
     outtextxy(20, max_y - 40, "Press any key to exit...");
-    
+
     getch();
     closegraph();
+
+    return 0;
 }
+
 
 /* ============================================
    BRESENHAM CIRCLE ALGORITHM
